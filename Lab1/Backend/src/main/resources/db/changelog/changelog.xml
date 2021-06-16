@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <changeSet id="1" author="postgres">
+        <sql>CREATE TYPE ROLE AS ENUM ('CLIENT', 'ADMIN')</sql>
+
+        <createTable tableName="users">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="ROLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="address" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="periodicals">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="VARCHAR(255)">
+                <constraints nullable="false"/>s
+            </column>
+            <column name="price_for_month" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price_for_year" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="receipts">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="sum" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="done_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>CREATE TYPE PERIOD AS ENUM ('MONTHLY', 'YEARLY')</sql>
+        
+        <createTable tableName="subscriptions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_subscription_user_id" references="users(id)" nullable="false"/>
+            </column>
+            <column name="periodical_id" type="BIGINT">
+                <constraints foreignKeyName="fk_subscription_periodical_id" references="periodicals(id)" nullable="false"/>
+            </column>
+            <column name="confirmed" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="DATE"/>
+            <column name="end_date" type="DATE"/>
+            <column name="period" type="PERIOD"/>
+            <column name="receipt_id" type="BIGINT">
+                <constraints foreignKeyName="fk_subscription_receipt_id" references="receipts(id)"/>
+            </column>
+        </createTable>
+
+        <!--Initial data-->
+        
+        <insert tableName="users">
+            <column name="username" value="admin"/>
+            <column name="password" value="admin"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="user"/>
+            <column name="password" value="user"/>
+            <column name="role" value="CLIENT"/>
+            <column name="name" value="Vasyl Vasylenko"/>
+            <column name="address" value="Volodymyrska St. 12, 1"/>
+        </insert>
+
+        <insert tableName="periodicals">
+            <column name="name" value="TIME"/>
+            <column name="description" value="Since its debut in New York City on March 3, 1923,
+            Time magazine was first published based in New York City by Briton Hadden and Henry
+            Luce, making it the first weekly news magazine in the United States. For many years,
+            it was published weekly, but by 2021 it switched to bi-weekly. It was first published
+            in New York City on March 3, 1923, and for many years it was run by its influential
+            co-founder Henry Luce.&#xA;
+            A European edition (Time Europe, formerly known as Time Atlantic) is published in London
+            and also covers the Middle East, Africa, and, since 2003, Latin America. An Asian edition
+            (Time Asia) is based in Hong Kong. The South Pacific edition, which covers Australia,
+            New Zealand, and the Pacific Islands, is based in Sydney. In December 2008, Time
+            discontinued publishing a Canadian advertiser edition." />
+            <column name="image" value="https://dplatformfiles.blob.core.windows.net/tierramedia/
+            benefits/2/259_product_scale_650x650.jpg"/>
+            <column name="price_for_month" value="200"/>
+            <column name="price_for_year" value="2000"/>
+            <column name="available" value="true"/>
+        </insert>
+        <insert tableName="periodicals">
+            <column name="name" value="BBC History"/>
+            <column name="description" value="BBC History Magazine is a British publication devoted to
+            history articles on both British and world history and are aimed at all levels of knowledge
+            and interest. The publication releases thirteen editions a year, one per month and a Christmas
+            special edition, and is owned by BBC Studios but is published under license by the Immediate
+            Media Company.&#xA;
+            BBC History is the biggest selling history magazine in the UK and is growing
+            in circulation by nearly 7% every year. The magazine consists of topical features, often
+            aligning with programming currently showing on BBC Radio and Television and written by academic
+            historians, historical analysis of news events and comparison with similar previous events,
+            reviews of new books and media and features into significant locations in history." />
+            <column name="image" value="https://assets.sainsburys-groceries.co.uk/gol/3483626/1/640x640.jpg"/>
+            <column name="price_for_month" value="100"/>
+            <column name="price_for_year" value="1000"/>
+            <column name="available" value="true"/>
+        </insert>
+
+        <insert tableName="receipts">
+            <column name="sum" value="200"/>
+            <column name="done_at" value="2021-06-09 07:05:06"/>
+        </insert>
+
+        <insert tableName="subscriptions">
+            <column name="user_id" value="2"/>
+            <column name="periodical_id" value="1"/>
+            <column name="confirmed" value="true"/>
+            <column name="start_date" value="2021-06-10"/>
+            <column name="end_date" value="2021-07-10"/>
+            <column name="period" value="MONTHLY"/>
+            <column name="receipt_id" value="1"/>
+        </insert>
+
+        <rollback>
+            <sql>DROP TYPE ROLE CASCADE</sql>
+            <sql>DROP TYPE PERIOD CASCADE</sql>
+            <dropTable tableName="users" cascadeConstraints="true"/>
+            <dropTable tableName="periodicals" cascadeConstraints="true"/>
+            <dropTable tableName="receipts" cascadeConstraints="true"/>
+            <dropTable tableName="subscriptions" cascadeConstraints="true"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
