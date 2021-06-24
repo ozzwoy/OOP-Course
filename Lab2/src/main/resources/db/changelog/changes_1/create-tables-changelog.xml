@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="postgres">
+
+        <createTable tableName="users">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="periodicals">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="period" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="available" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="payments">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="sum" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="subscriptions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_subscription_user_id" references="users(id)" nullable="false"/>
+            </column>
+            <column name="periodical_id" type="BIGINT">
+                <constraints foreignKeyName="fk_subscription_periodical_id" references="periodicals(id)" nullable="false"/>
+            </column>
+            <column name="payment_id" type="BIGINT">
+                <constraints foreignKeyName="fk_subscription_payment_id" references="payments(id)" nullable="false"/>
+            </column>
+            <column name="expiration_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--Initial data-->
+
+        <insert tableName="users">
+            <column name="username" value="admin"/>
+            <column name="name" value="Admin"/>
+            <column name="surname" value="Admin"/>
+            <column name="role" value="admin"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="user"/>
+            <column name="name" value="Vasyl"/>
+            <column name="surname" value="Vasylenko"/>
+            <column name="role" value="user"/>
+        </insert>
+
+        <insert tableName="periodicals">
+            <column name="name" value="TIME"/>
+            <column name="price" value="2000"/>
+            <column name="period" value="30"/>
+            <column name="available" value="true"/>
+        </insert>
+        <insert tableName="periodicals">
+            <column name="name" value="BBC History"/>
+            <column name="price" value="1300"/>
+            <column name="period" value="14"/>
+            <column name="available" value="true"/>
+        </insert>
+
+        <insert tableName="payments">
+            <column name="sum" value="2000"/>
+        </insert>
+
+        <insert tableName="subscriptions">
+            <column name="user_id" value="2"/>
+            <column name="periodical_id" value="1"/>
+            <column name="payment_id" value="1"/>
+            <column name="expiration_date" value="2022-06-10"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
